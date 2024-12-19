@@ -1,0 +1,37 @@
+version: 0.2
+
+env:
+  secrets-manager:
+    DISTRIBUTION_ID: Books:ADMIN_DISTRIBUTION_ID
+    USER_POOL_CLIENT_ID: Books:USER_POOL_CLIENT_ID
+    USER_POOL_ID: Books:USER_POOL_ID
+    IDENTITY_POOL_ID: Books:IDENTITY_POOL_ID
+    API_URL: Books:PRIVATE_API_URL
+    CERT_ARN: Books:CERT_ARN
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 22
+    commands:
+      - export PROJECT_NAME=Books
+      - npm install --global yarn
+  build:
+    commands:
+      - chmod +x bash/makeConfig.sh
+      - bash/makeConfig.sh
+      - yarn
+      - cd cdk
+      - yarn
+      - cd ..
+      - yarn build
+      - cd cdk
+      - yarn build
+      - yarn synth
+      - yarn deploy
+      - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+    finally:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - "**/*"
