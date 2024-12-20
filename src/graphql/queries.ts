@@ -17,3 +17,15 @@ export const getOmni = `query GetOmni {
     tags
   }
 }`;
+
+export const getBook = `query GetBook($getBookInput: GetBookInput!) {
+  getBook(getBookInput: $getBookInput) {
+    PK
+    SK
+    author
+    title
+    link
+    createdBy
+    createdAt
+  }
+}`;

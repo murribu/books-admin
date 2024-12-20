@@ -3,6 +3,7 @@ import { Button, FormControl, Table } from "react-bootstrap";
 import { Book, useBookContext } from "../contexts/bookContext";
 import { client } from "../App";
 import { createBook } from "../graphql/mutations";
+import { Link } from "react-router-dom";
 
 interface CreateBookReturn {
   data: {
@@ -70,6 +71,8 @@ const Books = () => {
             <th>Link</th>
             <th>Actions</th>
           </tr>
+        </thead>
+        <tbody>
           <tr>
             <th>
               <FormControl
@@ -113,14 +116,25 @@ const Books = () => {
               </Button>
             </th>
           </tr>
+        </tbody>
+      </Table>
+      <Table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>ISBN</th>
+            <th>Actions</th>
+          </tr>
         </thead>
         <tbody>
           {books.map((book) => (
             <tr key={book.isbn}>
-              <td>{book.title}</td>
+              <td>
+                <Link to={`/books/${book.isbn}`}>{book.title}</Link>
+              </td>
               <td>{book.author}</td>
               <td>{book.isbn}</td>
-              <td>---</td>
               <td>
                 <Button variant="danger" disabled={pending}>
                   Delete

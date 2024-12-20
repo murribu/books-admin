@@ -4,6 +4,7 @@ import Books from "./Books";
 import Home from "./Home";
 import Leas from "./Leas";
 import Account from "./Account";
+import BookComponent from "./Book";
 
 export const router = [
   { path: "/", element: <Home></Home> },
@@ -11,6 +12,7 @@ export const router = [
   { path: "/bans", element: <Bans></Bans> },
   { path: "/leas", element: <Leas></Leas> },
   { path: "/account", element: <Account></Account> },
+  { path: "/books/:isbn", element: <BookComponent></BookComponent> },
 ];
 
 const Router = () => (
