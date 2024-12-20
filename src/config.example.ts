@@ -8,7 +8,7 @@ export const config = {
   certArn: "",
   connectionArn:
     "arn:aws:codestar-connections:us-east-1:123456789012:connection/asdfasdf-1234-1234-asdf-123456789012",
-  repo: "stubagent25-frontend",
+  repo: "books-admin",
   repoOwner: "me",
-  branch: "develop",
+  branch: "main",
 };

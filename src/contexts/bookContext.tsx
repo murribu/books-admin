@@ -2,8 +2,10 @@ import { FC, createContext, useContext, useState } from "react";
 
 export interface Book {
   title: string;
-  id: string;
+  isbn: string;
   author: string;
+  link?: string;
+  index?: number;
 }
 
 export interface Ban {
@@ -23,6 +25,11 @@ export interface County {
   id: string;
 }
 
+export interface Tag {
+  name: string;
+  index: number;
+}
+
 export interface BookContextInterface {
   books: Book[];
   setBooks: (books: Book[]) => void;
@@ -32,6 +39,8 @@ export interface BookContextInterface {
   setBans: (bans: Ban[]) => void;
   counties: County[];
   setCounties: (counties: County[]) => void;
+  tags: Tag[];
+  setTags: (tags: Tag[]) => void;
 }
 interface BookProviderProps {
   children: React.ReactNode;
@@ -50,6 +59,8 @@ const defaultValue: BookContextInterface = {
   setBans: notYetImplemented,
   counties: [],
   setCounties: notYetImplemented,
+  tags: [],
+  setTags: notYetImplemented,
 };
 
 export const BookContext = createContext(defaultValue);
@@ -61,6 +72,7 @@ export const BookContextProvider: FC<BookProviderProps> = ({ children }) => {
   const [leas, setLeas] = useState<Lea[]>([]);
   const [bans, setBans] = useState<Ban[]>([]);
   const [counties, setCounties] = useState<County[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   return (
     <BookContext.Provider
       value={{
@@ -72,6 +84,8 @@ export const BookContextProvider: FC<BookProviderProps> = ({ children }) => {
         setBans,
         counties,
         setCounties,
+        tags,
+        setTags,
       }}
     >
       {children}

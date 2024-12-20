@@ -11,3 +11,17 @@ export const createBan = `mutation CreateBan($input: CreateBanInput!) {
     createdAt
   }
 }`;
+
+export const createBook = `mutation CreateBook($createBookInput: CreateBookInput!) {
+  createBook(createBookInput: $createBookInput) {
+    PK
+    SK
+    GSI1PK
+    GSI1SK
+    title
+    link
+    author
+    createdBy
+    createdAt
+  }
+}`;

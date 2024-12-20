@@ -14,7 +14,7 @@ const TopNav = () => {
     <Navbar bg="light" expand="lg" className="px-4">
       {/* @ts-ignore compatible */}
       <LinkContainer to="/">
-        <Navbar.Brand>StubAgent</Navbar.Brand>
+        <Navbar.Brand>Books Admin</Navbar.Brand>
       </LinkContainer>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">

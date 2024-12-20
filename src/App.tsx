@@ -41,13 +41,21 @@ interface GetOmniReturn {
 }
 
 function App() {
-  const { setLeas } = useBookContext();
+  const { setLeas, setBooks, setTags } = useBookContext();
 
   const fetchOmni = async () => {
     const response = (await client.graphql({
       query: getOmni,
     })) as GetOmniReturn;
     setLeas(response.data.getOmni.leas);
+    setBooks(
+      response.data.getOmni.books?.map((book, index) => ({ ...book, index })) ??
+        []
+    );
+    setTags(
+      response.data.getOmni.tags?.map((tag, index) => ({ name: tag, index })) ??
+        []
+    );
   };
 
   useEffect(() => {

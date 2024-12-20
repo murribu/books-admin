@@ -1,9 +1,135 @@
-import { useAuthenticator } from "@aws-amplify/ui-react";
+import { useState } from "react";
+import { Button, FormControl, Table } from "react-bootstrap";
+import { Book, useBookContext } from "../contexts/bookContext";
+import { client } from "../App";
+import { createBook } from "../graphql/mutations";
+
+interface CreateBookReturn {
+  data: {
+    createBook: {
+      PK: string;
+      SK: string;
+      GSI1PK: string;
+      GSI1SK: string;
+      author: string;
+      createdAt: string;
+      createdBy: string;
+      title: string;
+      link: string;
+    };
+  };
+}
 
 const Books = () => {
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [isbn, setIsbn] = useState("");
+  const [link, setLink] = useState("");
+  const [pending, setPending] = useState(false);
+
+  const { books, setBooks } = useBookContext();
+
+  const addBook = async () => {
+    setPending(true);
+    try {
+      const response = (await client.graphql({
+        query: createBook,
+        variables: {
+          createBookInput: {
+            title,
+            author,
+            link,
+            isbn,
+          },
+        },
+      })) as CreateBookReturn;
+      const newBook: Book = {
+        author: response.data.createBook.author,
+        title: response.data.createBook.title,
+        link: response.data.createBook.link,
+        isbn: response.data.createBook.PK.split("#")[1],
+      };
+      setBooks([...books, newBook]);
+      console.log("create book response", response);
+    } catch (error) {
+      console.error("create book error", error);
+    } finally {
+      setPending(false);
+    }
+  };
+
   return (
     <div>
       <h1>Books</h1>
+      <Table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>ISBN</th>
+            <th>Link</th>
+            <th>Actions</th>
+          </tr>
+          <tr>
+            <th>
+              <FormControl
+                type="text"
+                placeholder="Title"
+                className="mr-sm-2"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </th>
+            <th>
+              <FormControl
+                type="text"
+                placeholder="Author"
+                className="mr-sm-2"
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+              />
+            </th>
+            <th>
+              <FormControl
+                type="text"
+                placeholder="ISBN"
+                className="mr-sm-2"
+                value={isbn}
+                onChange={(e) => setIsbn(e.target.value)}
+              />
+            </th>
+            <th>
+              <FormControl
+                type="text"
+                placeholder="Link"
+                className="mr-sm-2"
+                value={link}
+                onChange={(e) => setLink(e.target.value)}
+              />
+            </th>
+            <th>
+              <Button variant="primary" disabled={pending} onClick={addBook}>
+                Add
+              </Button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {books.map((book) => (
+            <tr key={book.isbn}>
+              <td>{book.title}</td>
+              <td>{book.author}</td>
+              <td>{book.isbn}</td>
+              <td>---</td>
+              <td>
+                <Button variant="danger" disabled={pending}>
+                  Delete
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
     </div>
   );
 };
