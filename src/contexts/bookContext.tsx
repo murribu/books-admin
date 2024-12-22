@@ -30,6 +30,12 @@ export interface Tag {
   index: number;
 }
 
+export interface BanType {
+  id: string;
+  name: string;
+  score: number;
+}
+
 export interface BookContextInterface {
   books: Book[];
   setBooks: (books: Book[]) => void;
@@ -41,6 +47,8 @@ export interface BookContextInterface {
   setCounties: (counties: County[]) => void;
   tags: Tag[];
   setTags: (tags: Tag[]) => void;
+  banTypes: BanType[];
+  setBanTypes: (banTypes: BanType[]) => void;
 }
 interface BookProviderProps {
   children: React.ReactNode;
@@ -61,6 +69,8 @@ const defaultValue: BookContextInterface = {
   setCounties: notYetImplemented,
   tags: [],
   setTags: notYetImplemented,
+  banTypes: [],
+  setBanTypes: notYetImplemented,
 };
 
 export const BookContext = createContext(defaultValue);
@@ -73,6 +83,7 @@ export const BookContextProvider: FC<BookProviderProps> = ({ children }) => {
   const [bans, setBans] = useState<Ban[]>([]);
   const [counties, setCounties] = useState<County[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
+  const [banTypes, setBanTypes] = useState<BanType[]>([]);
   return (
     <BookContext.Provider
       value={{
@@ -86,6 +97,8 @@ export const BookContextProvider: FC<BookProviderProps> = ({ children }) => {
         setCounties,
         tags,
         setTags,
+        banTypes,
+        setBanTypes,
       }}
     >
       {children}

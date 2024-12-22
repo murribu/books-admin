@@ -1,5 +1,5 @@
-export const createBan = `mutation CreateBan($input: CreateBanInput!) {
-  createBan(input: $input) {
+export const createBan = `mutation CreateBan($createBanInput: CreateBanInput!) {
+  createBan(createBanInput: $createBanInput) {
     PK
     SK
     GSI1PK
@@ -7,6 +7,7 @@ export const createBan = `mutation CreateBan($input: CreateBanInput!) {
     title
     isbn
     author
+    leaName
     createdBy
     createdAt
   }

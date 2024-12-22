@@ -14,6 +14,11 @@ export const getOmni = `query GetOmni {
       name
       score
     }
+    banTypes {
+      id
+      name
+      score
+    }
     tags
   }
 }`;

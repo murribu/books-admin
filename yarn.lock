@@ -3561,6 +3561,13 @@
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.7.tgz#50ae4353eaaddc04044279812f52c8c65857dbcb"
   integrity sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==
 
+"@types/react-bootstrap-date-picker@^4.0.12":
+  version "4.0.12"
+  resolved "https://registry.yarnpkg.com/@types/react-bootstrap-date-picker/-/react-bootstrap-date-picker-4.0.12.tgz#3d9990c3abe07486e98629fd83d45a6bb9343920"
+  integrity sha512-1BieIlCMIi3b4Hz9wJT1vlp2udKydHzlmchPw48iROINLbxaML2/3wcxBZT1PCfImfKeZYbWrL5YOBuhC/rrOA==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-dom@18.3.1":
   version "18.3.1"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.3.1.tgz#1e4654c08a9cdcfb6594c780ac59b55aad42fe07"
@@ -9363,6 +9370,11 @@ react-app-polyfill@^3.0.0:
     raf "^3.4.1"
     regenerator-runtime "^0.13.9"
     whatwg-fetch "^3.6.2"
+
+react-bootstrap-date-picker@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/react-bootstrap-date-picker/-/react-bootstrap-date-picker-5.1.0.tgz#5f87c6a875e411dbf46d2be74960756f113ebf23"
+  integrity sha512-qxg1kSZGgRSiyAlsyH79GhKkrgA7kwL+Me6UgaIW6DXRSckaTeRO359hsRebXUrrL+QzJlO2fHKnHVrSYctUIg==
 
 react-bootstrap@^2.10.6:
   version "2.10.7"

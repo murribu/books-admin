@@ -5,7 +5,7 @@ import { Container } from "react-bootstrap";
 import "./App.css";
 import Router from "./components/Router";
 import TopNav from "./components/TopNav";
-import { Book, Lea, useBookContext } from "./contexts/bookContext";
+import { BanType, Book, Lea, useBookContext } from "./contexts/bookContext";
 import { generateClient } from "aws-amplify/api";
 import { getOmni } from "./graphql/queries";
 import { useEffect } from "react";
@@ -36,12 +36,13 @@ interface GetOmniReturn {
       books: Book[];
       leas: Lea[];
       tags: string[];
+      banTypes: BanType[];
     };
   };
 }
 
 function App() {
-  const { setLeas, setBooks, setTags } = useBookContext();
+  const { setLeas, setBooks, setTags, setBanTypes } = useBookContext();
 
   const fetchOmni = async () => {
     const response = (await client.graphql({
@@ -56,6 +57,7 @@ function App() {
       response.data.getOmni.tags?.map((tag, index) => ({ name: tag, index })) ??
         []
     );
+    setBanTypes(response.data.getOmni.banTypes);
   };
 
   useEffect(() => {

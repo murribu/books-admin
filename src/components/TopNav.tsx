@@ -31,6 +31,10 @@ const TopNav = () => {
           <LinkContainer to="/leas">
             <Nav.Link>LEAs</Nav.Link>
           </LinkContainer>
+          {/* @ts-ignore compatible */}
+          <LinkContainer to="/ban-types">
+            <Nav.Link>Ban Types</Nav.Link>
+          </LinkContainer>
         </Nav>
       </Navbar.Collapse>
       <Navbar.Collapse className="justify-content-end">

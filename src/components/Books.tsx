@@ -65,11 +65,7 @@ const Books = () => {
       <Table>
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>ISBN</th>
-            <th>Link</th>
-            <th>Actions</th>
+            <th colSpan={5}>Add a Book</th>
           </tr>
         </thead>
         <tbody>
