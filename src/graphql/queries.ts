@@ -34,3 +34,18 @@ export const getBook = `query GetBook($getBookInput: GetBookInput!) {
     createdAt
   }
 }`;
+
+export const getAllBans = `query GetAllBans {
+  getAllBans {
+    PK
+    SK
+    GSI1PK
+    GSI1SK
+    title
+    author
+    banTypeId
+    leaName
+    createdAt
+    createdBy
+  }
+}`;

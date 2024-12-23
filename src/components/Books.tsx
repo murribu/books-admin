@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button, FormControl, Table } from "react-bootstrap";
 import { Book, useBookContext } from "../contexts/bookContext";
 import { client } from "../App";
@@ -29,6 +29,10 @@ const Books = () => {
   const [pending, setPending] = useState(false);
 
   const { books, setBooks } = useBookContext();
+
+  const orderedBooks = useMemo(() => {
+    return books.sort((a, b) => a.title.localeCompare(b.title));
+  }, [books]);
 
   const addBook = async () => {
     setPending(true);
@@ -124,7 +128,7 @@ const Books = () => {
           </tr>
         </thead>
         <tbody>
-          {books.map((book) => (
+          {orderedBooks.map((book) => (
             <tr key={book.isbn}>
               <td>
                 <Link to={`/books/${book.isbn}`}>{book.title}</Link>

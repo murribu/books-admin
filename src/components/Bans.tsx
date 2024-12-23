@@ -1,8 +1,26 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button, Form, FormControl, Table } from "react-bootstrap";
-import { useBookContext } from "../contexts/bookContext";
+import { Ban, useBookContext } from "../contexts/bookContext";
 import { client } from "../App";
 import { createBan } from "../graphql/mutations";
+import { getAllBans } from "../graphql/queries";
+
+interface DbBan {
+  PK: string;
+  SK: string;
+  GSI1PK: string;
+  GSI1SK: string;
+  title: string;
+  author: string;
+  banTypeId: string;
+  leaName: string;
+  createdAt: string;
+  createdBy: string;
+}
+
+interface getAllBansReturn {
+  data: { getAllBans: DbBan[] };
+}
 
 const Bans = () => {
   const { books, leas, banTypes } = useBookContext();
@@ -12,6 +30,39 @@ const Bans = () => {
   const [banType, setBanType] = useState("");
   const [saving, setSaving] = useState(false);
   const [fetching, setFetching] = useState(false);
+  const [bans, setBans] = useState<Ban[]>([]);
+
+  const fetchAllBans = async () => {
+    setFetching(true);
+    try {
+      const response = (await client.graphql({
+        query: getAllBans,
+      })) as getAllBansReturn;
+      setBans(
+        response.data.getAllBans.map((b) => ({
+          bookId: b.SK.split("#")[0],
+          banTypeId: b.banTypeId,
+          date: b.SK.split("#")[1],
+          leaId: b.SK.split("#")[2],
+          whenBanned: b.SK.split("#")[1],
+        }))
+      );
+      console.log("get all bans response", response);
+    } catch (error) {
+      console.error("get all bans error", error);
+    } finally {
+      setFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllBans();
+  }, []);
+
+  const orderedBooks = useMemo(
+    () => books.sort((a, b) => a.title.localeCompare(b.title)),
+    [books]
+  );
 
   const addBan = async () => {
     setSaving(true);
@@ -60,7 +111,7 @@ const Bans = () => {
                 onChange={(e) => setIsbn(e.target.value)}
               >
                 <option value="">Select a book</option>
-                {books.map((book) => (
+                {orderedBooks.map((book) => (
                   <option key={book.isbn} value={book.isbn}>
                     {book.title}
                   </option>
@@ -114,6 +165,27 @@ const Bans = () => {
               </Button>
             </td>
           </tr>
+          {fetching ? (
+            <tr>
+              <td colSpan={5}>Fetching...</td>
+            </tr>
+          ) : bans.length === 0 ? (
+            <tr>
+              <td colSpan={5}>No bans</td>
+            </tr>
+          ) : (
+            bans.map((ban) => (
+              <tr key={ban.bookId + ban.leaId}>
+                <td>{books.find((b) => b.isbn === ban.bookId)?.title}</td>
+                <td>{leas.find((l) => l.id === ban.leaId)?.name}</td>
+                <td>{banTypes.find((b) => b.id === ban.banTypeId)?.name}</td>
+                <td>{ban.whenBanned}</td>
+                <td>
+                  <Button variant="danger">Remove</Button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </Table>
     </div>

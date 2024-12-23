@@ -11,6 +11,8 @@ export interface Book {
 export interface Ban {
   bookId: string;
   leaId: string;
+  banTypeId: string;
+  whenBanned: string;
 }
 
 export interface Lea {
