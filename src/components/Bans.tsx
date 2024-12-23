@@ -80,6 +80,11 @@ const Bans = () => {
         },
       }); // as CreateBanReturn;
       console.log("create ban response", response);
+      setIsbn("");
+      setLea("");
+      setDate("");
+      setBanType("");
+      fetchAllBans();
     } catch (error) {
       console.error("create ban error", error);
     } finally {

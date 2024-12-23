@@ -56,6 +56,10 @@ const Books = () => {
       };
       setBooks([...books, newBook]);
       console.log("create book response", response);
+      setTitle("");
+      setAuthor("");
+      setIsbn("");
+      setLink("");
     } catch (error) {
       console.error("create book error", error);
     } finally {
