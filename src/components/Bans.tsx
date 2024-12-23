@@ -3,7 +3,6 @@ import { Button, Form, FormControl, Table } from "react-bootstrap";
 import { useBookContext } from "../contexts/bookContext";
 import { client } from "../App";
 import { createBan } from "../graphql/mutations";
-import DatePicker from "react-bootstrap-date-picker";
 
 const Bans = () => {
   const { books, leas, banTypes } = useBookContext();
@@ -11,19 +10,21 @@ const Bans = () => {
   const [lea, setLea] = useState("");
   const [date, setDate] = useState("");
   const [banType, setBanType] = useState("");
-  const [pending, setPending] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [fetching, setFetching] = useState(false);
 
   const addBan = async () => {
-    setPending(true);
+    setSaving(true);
     try {
       const response = await client.graphql({
         query: createBan,
         variables: {
           createBanInput: {
             isbn,
-            lea,
-            date,
+            leaId: lea,
+            whenBanned: date,
             leaName: leas.find((l) => l.id === lea)?.name,
+            banTypeId: banType,
           },
         },
       }); // as CreateBanReturn;
@@ -31,7 +32,7 @@ const Bans = () => {
     } catch (error) {
       console.error("create ban error", error);
     } finally {
-      setPending(false);
+      setSaving(false);
     }
   };
 
@@ -99,20 +100,16 @@ const Bans = () => {
               </FormControl>
             </td>
             <td>
-              {/*   <Form.Control
+              <Form.Control
                 type="date"
                 placeholder="Date"
                 className="mr-sm-2"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-              /> */}
-              <DatePicker
-                onChange={(value: string) => setDate(value)}
-                value={date}
-              ></DatePicker>
+              />
             </td>
             <td>
-              <Button variant="primary" onClick={addBan} disabled={pending}>
+              <Button variant="primary" onClick={addBan} disabled={saving}>
                 Add
               </Button>
             </td>
