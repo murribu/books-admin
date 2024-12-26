@@ -77,23 +77,21 @@ const BanComponent = () => {
       <p>Author: {book?.author}</p>
       <p>LEA: {lea?.name}</p>
       <p>When Banned: {ban?.whenBanned}</p>
-      <p>
-        Links:
-        {ban?.links?.map((l) => (
-          <p>
-            <FormControl
-              value={l}
-              onChange={(e) => {
-                if (ban) {
-                  ban.links[ban.links.indexOf(l)] = e.target.value;
-                  setBan({ ...ban });
-                }
-              }}
-            />
-          </p>
-        ))}
-        <Button onClick={addLink}>Add Link</Button>
-      </p>
+      Links:
+      {ban?.links?.map((l, index) => (
+        <p key={index}>
+          <FormControl
+            value={l}
+            onChange={(e) => {
+              if (ban) {
+                ban.links[ban.links.indexOf(l)] = e.target.value;
+                setBan({ ...ban });
+              }
+            }}
+          />
+        </p>
+      ))}
+      <Button onClick={addLink}>Add Link</Button>
       <p>
         {ban && (
           <>

@@ -50,3 +50,35 @@ export const getAllBans = `query GetAllBans {
     createdBy
   }
 }`;
+
+export const getBansByLea = `query GetBansByLea($getBansByLeaInput: GetBansByLeaInput!) {
+  getBansByLea(getBansByLeaInput: $getBansByLeaInput) {
+    PK
+    SK
+    GSI1PK
+    GSI1SK
+    title
+    author
+    banTypeId
+    leaName
+    links
+    createdAt
+    createdBy
+  }
+}`;
+
+export const getBansByIsbn = `query GetBansByIsbn($getBansByIsbnInput: GetBansByIsbnInput!) {
+  getBansByIsbn(getBansByIsbnInput: $getBansByIsbnInput) {
+    PK
+    SK
+    GSI1PK
+    GSI1SK
+    title
+    author
+    banTypeId
+    leaName
+    links
+    createdAt
+    createdBy
+  }
+}`;

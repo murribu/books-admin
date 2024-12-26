@@ -3,8 +3,8 @@ import { Button, Form, FormControl, Table } from "react-bootstrap";
 import { Ban, useBookContext } from "../contexts/bookContext";
 import { client } from "../App";
 import { createBan, deleteBan } from "../graphql/mutations";
-import { getAllBans } from "../graphql/queries";
-import { Link } from "react-router-dom";
+import { getAllBans, getBansByIsbn, getBansByLea } from "../graphql/queries";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 interface CreateBanReturn {
   data: { createBan: DbBan };
@@ -24,8 +24,16 @@ interface DbBan {
   createdBy: string;
 }
 
-interface getAllBansReturn {
+interface GetAllBansReturn {
   data: { getAllBans: DbBan[] };
+}
+
+interface GetBansByIsbnReturn {
+  data: { getBansByIsbn: DbBan[] };
+}
+
+interface GetBansByLeaReturn {
+  data: { getBansByLea: DbBan[] };
 }
 
 export const removeBan = async (
@@ -62,7 +70,7 @@ export const fetchAllBans = async (
   try {
     const response = (await client.graphql({
       query: getAllBans,
-    })) as getAllBansReturn;
+    })) as GetAllBansReturn;
     setBans(
       response.data.getAllBans.map((b) => ({
         isbn: b.SK.split("#")[0],
@@ -83,6 +91,8 @@ export const fetchAllBans = async (
 
 const Bans = () => {
   const { books, leas, banTypes, bans, setBans } = useBookContext();
+  const navigate = useNavigate();
+  const { search } = useLocation();
   const [isbn, setIsbn] = useState("");
   const [lea, setLea] = useState("");
   const [date, setDate] = useState("");
@@ -90,10 +100,87 @@ const Bans = () => {
   const [saving, setSaving] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [link, setLink] = useState("");
+  const [filteredIsbn, setFilteredIsbn] = useState("");
+  const [filteredLea, setFilteredLea] = useState("");
+
+  const fetchBansByIsbn = async (isbn: string) => {
+    setFetching(true);
+    try {
+      const response = (await client.graphql({
+        query: getBansByIsbn,
+        variables: {
+          getBansByIsbnInput: {
+            isbn,
+          },
+        },
+      })) as GetBansByIsbnReturn;
+      setBans(
+        response.data.getBansByIsbn.map((b) => ({
+          isbn: b.SK.split("#")[0],
+          banTypeId: b.banTypeId,
+          date: b.SK.split("#")[1],
+          leaId: b.SK.split("#")[2],
+          whenBanned: b.SK.split("#")[1],
+          links: JSON.parse(b.links),
+        }))
+      );
+      console.log("get bans by isbn response", response);
+    } catch (error) {
+      console.error("get bans by isbn error", error);
+    } finally {
+      setFetching(false);
+    }
+  };
+
+  const fetchBansByLea = async (leaId: string) => {
+    setFetching(true);
+    try {
+      const response = (await client.graphql({
+        query: getBansByLea,
+        variables: {
+          getBansByLeaInput: {
+            leaId,
+          },
+        },
+      })) as GetBansByLeaReturn;
+      console.log("get bans by lea response", response);
+      setBans(
+        response.data.getBansByLea.map((b) => ({
+          isbn: b.SK.split("#")[0],
+          banTypeId: b.banTypeId,
+          date: b.SK.split("#")[1],
+          leaId: b.SK.split("#")[2],
+          whenBanned: b.SK.split("#")[1],
+          links: JSON.parse(b.links),
+        }))
+      );
+    } catch (error) {
+      console.error("get bans by lea error", error);
+    } finally {
+      setFetching(false);
+    }
+  };
 
   useEffect(() => {
+    const params = new URLSearchParams(search);
+    const isbnParam = params.get("isbn");
+    const leaParam = params.get("lea");
+    if (isbnParam) {
+      fetchBansByIsbn(isbnParam);
+      setFilteredIsbn(isbnParam);
+      setFilteredLea("");
+      return;
+    }
+    if (leaParam) {
+      fetchBansByLea(leaParam);
+      setFilteredLea(leaParam);
+      setFilteredIsbn("");
+      return;
+    }
     fetchAllBans(setFetching, setBans);
-  }, []);
+    setFilteredIsbn("");
+    setFilteredLea("");
+  }, [search]);
 
   const orderedBooks = useMemo(
     () => books.sort((a, b) => a.title.localeCompare(b.title)),
@@ -140,7 +227,7 @@ const Bans = () => {
             <th>LEA</th>
             <th>Ban Type</th>
             <th>Date</th>
-            <th>Links</th>
+            <th>Link</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -217,6 +304,55 @@ const Bans = () => {
               </Button>
             </td>
           </tr>
+        </tbody>
+      </Table>
+      <Table>
+        <thead>
+          <tr>
+            <th>
+              Filter by Book:{" "}
+              <FormControl
+                as="select"
+                placeholder="Book"
+                className="mr-sm-2"
+                value={filteredIsbn}
+                onChange={(e) => navigate(`/bans?isbn=${e.target.value}`)}
+              >
+                <option value="">Select a book</option>
+                {orderedBooks.map((book) => (
+                  <option key={book.isbn} value={book.isbn}>
+                    {book.title}
+                  </option>
+                ))}
+              </FormControl>
+            </th>
+            <th>
+              Filter by LEA:{" "}
+              <FormControl
+                as="select"
+                placeholder="LEA"
+                className="mr-sm-2"
+                value={filteredLea}
+                onChange={(e) => navigate(`/bans?lea=${e.target.value}`)}
+              >
+                <option value="">Select a LEA</option>
+                {leas.map((lea) => (
+                  <option key={lea.id} value={lea.id}>
+                    {lea.name}
+                  </option>
+                ))}
+              </FormControl>
+            </th>
+          </tr>
+          <tr>
+            <th>Book</th>
+            <th>LEA</th>
+            <th>Ban Type</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
           {fetching ? (
             <tr>
               <td colSpan={5}>Fetching...</td>
@@ -240,15 +376,6 @@ const Bans = () => {
                   <td>{leas.find((l) => l.id === ban.leaId)?.name}</td>
                   <td>{banTypes.find((b) => b.id === ban.banTypeId)?.name}</td>
                   <td>{ban.whenBanned}</td>
-                  <td>
-                    {ban.links?.map((link) => (
-                      <p>
-                        <a key={link} href={link} target="_new">
-                          {link}
-                        </a>
-                      </p>
-                    ))}
-                  </td>
                   <td>
                     <Button
                       variant="danger"
