@@ -45,6 +45,7 @@ export const getAllBans = `query GetAllBans {
     author
     banTypeId
     leaName
+    links
     createdAt
     createdBy
   }

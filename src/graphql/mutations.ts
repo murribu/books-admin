@@ -38,3 +38,10 @@ export const createBanType = `mutation CreateBanType($createBanTypeInput: Create
     }
   }
 }`;
+
+export const deleteBan = `mutation DeleteBan($deleteBanInput: DeleteBanInput!) {
+  deleteBan(deleteBanInput: $deleteBanInput) {
+    PK
+    SK
+  }
+}`;

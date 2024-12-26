@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Button, Form, FormControl, Table } from "react-bootstrap";
 import { Ban, useBookContext } from "../contexts/bookContext";
 import { client } from "../App";
-import { createBan } from "../graphql/mutations";
+import { createBan, deleteBan } from "../graphql/mutations";
 import { getAllBans } from "../graphql/queries";
 
 interface DbBan {
@@ -14,6 +14,7 @@ interface DbBan {
   author: string;
   banTypeId: string;
   leaName: string;
+  links: string;
   createdAt: string;
   createdBy: string;
 }
@@ -30,6 +31,7 @@ const Bans = () => {
   const [banType, setBanType] = useState("");
   const [saving, setSaving] = useState(false);
   const [fetching, setFetching] = useState(false);
+  const [link, setLink] = useState("");
   const [bans, setBans] = useState<Ban[]>([]);
 
   const fetchAllBans = async () => {
@@ -40,11 +42,12 @@ const Bans = () => {
       })) as getAllBansReturn;
       setBans(
         response.data.getAllBans.map((b) => ({
-          bookId: b.SK.split("#")[0],
+          isbn: b.SK.split("#")[0],
           banTypeId: b.banTypeId,
           date: b.SK.split("#")[1],
           leaId: b.SK.split("#")[2],
           whenBanned: b.SK.split("#")[1],
+          links: JSON.parse(b.links),
         }))
       );
       console.log("get all bans response", response);
@@ -76,6 +79,7 @@ const Bans = () => {
             whenBanned: date,
             leaName: leas.find((l) => l.id === lea)?.name,
             banTypeId: banType,
+            links: JSON.stringify([link]),
           },
         },
       }); // as CreateBanReturn;
@@ -84,9 +88,31 @@ const Bans = () => {
       setLea("");
       setDate("");
       setBanType("");
+      setLink("");
       fetchAllBans();
     } catch (error) {
       console.error("create ban error", error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const removeBan = async (isbn: string, leaId: string, whenBanned: string) => {
+    setSaving(true);
+    try {
+      const response = await client.graphql({
+        query: deleteBan,
+        variables: {
+          deleteBanInput: {
+            isbn,
+            leaId,
+            whenBanned,
+          },
+        },
+      }); // as DeleteBanReturn;
+      console.log("delete ban response", response);
+    } catch (error) {
+      console.error("delete ban error", error);
     } finally {
       setSaving(false);
     }
@@ -102,6 +128,7 @@ const Bans = () => {
             <th>LEA</th>
             <th>Ban Type</th>
             <th>Date</th>
+            <th>Links</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -165,6 +192,14 @@ const Bans = () => {
               />
             </td>
             <td>
+              <FormControl
+                placeholder="Link"
+                className="mr-sm-2"
+                value={link}
+                onChange={(e) => setLink(e.target.value)}
+              />
+            </td>
+            <td>
               <Button variant="primary" onClick={addBan} disabled={saving}>
                 Add
               </Button>
@@ -180,13 +215,27 @@ const Bans = () => {
             </tr>
           ) : (
             bans.map((ban) => (
-              <tr key={ban.bookId + ban.leaId}>
-                <td>{books.find((b) => b.isbn === ban.bookId)?.title}</td>
+              <tr key={ban.isbn + ban.leaId}>
+                <td>{books.find((b) => b.isbn === ban.isbn)?.title}</td>
                 <td>{leas.find((l) => l.id === ban.leaId)?.name}</td>
                 <td>{banTypes.find((b) => b.id === ban.banTypeId)?.name}</td>
                 <td>{ban.whenBanned}</td>
                 <td>
-                  <Button variant="danger">Remove</Button>
+                  {ban.links?.map((link) => (
+                    <a key={link} href={link}>
+                      {link}
+                    </a>
+                  ))}
+                </td>
+                <td>
+                  <Button
+                    variant="danger"
+                    onClick={() =>
+                      removeBan(ban.isbn, ban.leaId, ban.whenBanned)
+                    }
+                  >
+                    Remove
+                  </Button>
                 </td>
               </tr>
             ))

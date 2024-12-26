@@ -9,10 +9,11 @@ export interface Book {
 }
 
 export interface Ban {
-  bookId: string;
+  isbn: string;
   leaId: string;
   banTypeId: string;
   whenBanned: string;
+  links: string[];
 }
 
 export interface Lea {
