@@ -45,3 +45,19 @@ export const deleteBan = `mutation DeleteBan($deleteBanInput: DeleteBanInput!) {
     SK
   }
 }`;
+
+export const updateBan = `mutation UpdateBan($updateBanInput: UpdateBanInput!) {
+  updateBan(updateBanInput: $updateBanInput) {
+    PK
+    SK
+    GSI1PK
+    GSI1SK
+    title
+    isbn
+    author
+    leaName
+    links
+    createdBy
+    createdAt
+  }
+}`;

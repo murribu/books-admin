@@ -242,9 +242,11 @@ const Bans = () => {
                   <td>{ban.whenBanned}</td>
                   <td>
                     {ban.links?.map((link) => (
-                      <a key={link} href={link}>
-                        {link}
-                      </a>
+                      <p>
+                        <a key={link} href={link} target="_new">
+                          {link}
+                        </a>
+                      </p>
                     ))}
                   </td>
                   <td>
