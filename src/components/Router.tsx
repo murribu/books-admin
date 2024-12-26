@@ -6,6 +6,7 @@ import Leas from "./Leas";
 import Account from "./Account";
 import BookComponent from "./Book";
 import BanTypes from "./BanTypes";
+import BanComponent from "./Ban";
 
 export const router = [
   { path: "/", element: <Home></Home> },
@@ -15,6 +16,7 @@ export const router = [
   { path: "/account", element: <Account></Account> },
   { path: "/ban-types", element: <BanTypes></BanTypes> },
   { path: "/books/:isbn", element: <BookComponent></BookComponent> },
+  { path: "/bans/:id", element: <BanComponent></BanComponent> },
 ];
 
 const Router = () => (
