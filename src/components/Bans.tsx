@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Button, Form, FormControl, Table } from "react-bootstrap";
+import { Button, Form, FormControl, Modal, Table } from "react-bootstrap";
 import { Ban, useBookContext } from "../contexts/bookContext";
 import { client } from "../App";
 import { createBan, deleteBan } from "../graphql/mutations";
@@ -102,6 +102,8 @@ const Bans = () => {
   const [link, setLink] = useState("");
   const [filteredIsbn, setFilteredIsbn] = useState("");
   const [filteredLea, setFilteredLea] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [banToRemove, setBanToRemove] = useState<Ban | undefined>();
 
   const fetchBansByIsbn = async (isbn: string) => {
     setFetching(true);
@@ -379,14 +381,10 @@ const Bans = () => {
                   <td>
                     <Button
                       variant="danger"
-                      onClick={() =>
-                        removeBan(
-                          ban.isbn,
-                          ban.leaId,
-                          ban.whenBanned,
-                          setSaving
-                        )
-                      }
+                      onClick={() => {
+                        setBanToRemove(ban);
+                        setShowModal(true);
+                      }}
                     >
                       Remove
                     </Button>
@@ -397,6 +395,32 @@ const Bans = () => {
           )}
         </tbody>
       </Table>
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Action</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete this ban?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          {banToRemove && (
+            <Button
+              variant="danger"
+              onClick={() =>
+                removeBan(
+                  banToRemove?.isbn,
+                  banToRemove?.leaId,
+                  banToRemove?.whenBanned,
+                  setSaving
+                )
+              }
+            >
+              Confirm
+            </Button>
+          )}
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
