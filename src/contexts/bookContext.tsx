@@ -1,10 +1,22 @@
 import { FC, createContext, useContext, useState } from "react";
 
+export interface DbBook {
+  PK: string;
+  SK: string;
+  GSI1PK: string;
+  GSI1SK: string;
+  author: string;
+  createdAt: string;
+  createdBy: string;
+  title: string;
+  links: string;
+}
+
 export interface Book {
   title: string;
   id: string;
   author: string;
-  link?: string;
+  links: string[];
   index?: number;
 }
 

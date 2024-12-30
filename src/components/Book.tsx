@@ -2,19 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { client } from "../App";
 import { getBook } from "../graphql/queries";
-import { Book } from "../contexts/bookContext";
+import { Book, DbBook } from "../contexts/bookContext";
 
 interface GetBookReturn {
   data: {
-    getBook: {
-      PK: string;
-      SK: string;
-      author: string;
-      title: string;
-      link: string;
-      createdBy: string;
-      createdAt: string;
-    };
+    getBook: DbBook;
   };
 }
 
@@ -30,7 +22,7 @@ const BookComponent = () => {
     setBook({
       title: response.data.getBook.title,
       author: response.data.getBook.author,
-      link: response.data.getBook.link,
+      links: JSON.parse(response.data.getBook.links) as string[],
       id: response.data.getBook.PK.split("#")[1],
     });
     console.log("get book response", response);
@@ -46,12 +38,14 @@ const BookComponent = () => {
       <p>ID: {id}</p>
       <p>Title: {book?.title}</p>
       <p>Author: {book?.author}</p>
-      <p>
-        Link:{" "}
-        <a href={book?.link} target="_blank" rel="noreferrer">
-          {book?.link}
-        </a>
-      </p>
+      <p>Links: </p>
+      {book?.links.map((link, i) => (
+        <p>
+          <a key={i} href={link} target="_blank" rel="noreferrer">
+            {link}
+          </a>
+        </p>
+      ))}
     </div>
   );
 };

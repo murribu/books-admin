@@ -1,23 +1,13 @@
 import { useMemo, useState } from "react";
 import { Button, FormControl, Table } from "react-bootstrap";
-import { Book, useBookContext } from "../contexts/bookContext";
+import { Book, DbBook, useBookContext } from "../contexts/bookContext";
 import { client } from "../App";
 import { createBook } from "../graphql/mutations";
 import { Link } from "react-router-dom";
 
 interface CreateBookReturn {
   data: {
-    createBook: {
-      PK: string;
-      SK: string;
-      GSI1PK: string;
-      GSI1SK: string;
-      author: string;
-      createdAt: string;
-      createdBy: string;
-      title: string;
-      link: string;
-    };
+    createBook: DbBook;
   };
 }
 
@@ -43,7 +33,7 @@ const Books = () => {
           createBookInput: {
             title,
             author,
-            link,
+            links: JSON.stringify([link]),
             id,
           },
         },
@@ -51,7 +41,7 @@ const Books = () => {
       const newBook: Book = {
         author: response.data.createBook.author,
         title: response.data.createBook.title,
-        link: response.data.createBook.link,
+        links: JSON.parse(response.data.createBook.links),
         id: response.data.createBook.PK.split("#")[1],
       };
       setBooks([...books, newBook]);
