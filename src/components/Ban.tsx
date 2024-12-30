@@ -16,16 +16,18 @@ const BanComponent = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const isbn = id?.split(":")[0];
+    const bookId = id?.split(":")[0];
     const leaId = id?.split(":")[1];
     const whenBanned = id?.split(":")[2];
     setBan(
       bans.find(
         (b) =>
-          b.isbn === isbn && b.leaId === leaId && b.whenBanned === whenBanned
+          b.bookId === bookId &&
+          b.leaId === leaId &&
+          b.whenBanned === whenBanned
       )
     );
-    setBook(books.find((b) => b.isbn === isbn) || null);
+    setBook(books.find((b) => b.id === bookId) || null);
     setLea(leas.find((l) => l.id === leaId) || null);
     console.log("ban", ban, "bans", bans);
   }, [id, bans]);
@@ -53,7 +55,7 @@ const BanComponent = () => {
         query: updateBan,
         variables: {
           updateBanInput: {
-            isbn: ban?.isbn,
+            bookId: ban?.bookId,
             leaId: ban?.leaId,
             whenBanned: ban?.whenBanned,
             links: JSON.stringify(ban?.links),
@@ -70,9 +72,9 @@ const BanComponent = () => {
   return (
     <div>
       <h1>Ban</h1>
-      <p>ISBN: {id}</p>
+      <p>ID: {id}</p>
       <p>
-        Title: <Link to={`/books/${book?.isbn}`}>{book?.title}</Link>
+        Title: <Link to={`/books/${book?.id}`}>{book?.title}</Link>
       </p>
       <p>Author: {book?.author}</p>
       <p>LEA: {lea?.name}</p>
@@ -121,7 +123,7 @@ const BanComponent = () => {
             <Button
               variant="danger"
               onClick={() =>
-                removeBan(ban?.isbn, ban?.leaId, ban?.whenBanned, setSaving)
+                removeBan(ban?.bookId, ban?.leaId, ban?.whenBanned, setSaving)
               }
             >
               Confirm

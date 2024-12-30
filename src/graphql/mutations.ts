@@ -5,7 +5,7 @@ export const createBan = `mutation CreateBan($createBanInput: CreateBanInput!) {
     GSI1PK
     GSI1SK
     title
-    isbn
+    bookId
     author
     leaName
     createdBy
@@ -53,10 +53,24 @@ export const updateBan = `mutation UpdateBan($updateBanInput: UpdateBanInput!) {
     GSI1PK
     GSI1SK
     title
-    isbn
+    bookId
     author
     leaName
     links
+    createdBy
+    createdAt
+  }
+}`;
+
+export const updateBook = `mutation UpdateBook($updateBookInput: UpdateBookInput!) {
+  updateBook(updateBookInput: $updateBookInput) {
+    PK
+    SK
+    GSI1PK
+    GSI1SK
+    title
+    links
+    author
     createdBy
     createdAt
   }

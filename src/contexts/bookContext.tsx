@@ -2,14 +2,14 @@ import { FC, createContext, useContext, useState } from "react";
 
 export interface Book {
   title: string;
-  isbn: string;
+  id: string;
   author: string;
   link?: string;
   index?: number;
 }
 
 export interface Ban {
-  isbn: string;
+  bookId: string;
   leaId: string;
   banTypeId: string;
   whenBanned: string;

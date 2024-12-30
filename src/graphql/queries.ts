@@ -5,7 +5,7 @@ export const getOmni = `query GetOmni {
     books {
       author
       count
-      isbn
+      id
       title
     }
     leas {
@@ -29,7 +29,7 @@ export const getBook = `query GetBook($getBookInput: GetBookInput!) {
     SK
     author
     title
-    link
+    links
     createdBy
     createdAt
   }
@@ -67,8 +67,8 @@ export const getBansByLea = `query GetBansByLea($getBansByLeaInput: GetBansByLea
   }
 }`;
 
-export const getBansByIsbn = `query GetBansByIsbn($getBansByIsbnInput: GetBansByIsbnInput!) {
-  getBansByIsbn(getBansByIsbnInput: $getBansByIsbnInput) {
+export const getBansByBookId = `query GetBansByBookId($getBansByBookIdInput: GetBansByBookIdInput!) {
+  getBansByBookId(getBansByBookIdInput: $getBansByBookIdInput) {
     PK
     SK
     GSI1PK

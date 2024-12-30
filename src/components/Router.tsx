@@ -15,7 +15,7 @@ export const router = [
   { path: "/leas", element: <Leas></Leas> },
   { path: "/account", element: <Account></Account> },
   { path: "/ban-types", element: <BanTypes></BanTypes> },
-  { path: "/books/:isbn", element: <BookComponent></BookComponent> },
+  { path: "/books/:id", element: <BookComponent></BookComponent> },
   { path: "/bans/:id", element: <BanComponent></BanComponent> },
 ];
 

@@ -24,7 +24,7 @@ interface CreateBookReturn {
 const Books = () => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
-  const [isbn, setIsbn] = useState("");
+  const [id, setId] = useState("");
   const [link, setLink] = useState("");
   const [pending, setPending] = useState(false);
 
@@ -44,7 +44,7 @@ const Books = () => {
             title,
             author,
             link,
-            isbn,
+            id,
           },
         },
       })) as CreateBookReturn;
@@ -52,13 +52,13 @@ const Books = () => {
         author: response.data.createBook.author,
         title: response.data.createBook.title,
         link: response.data.createBook.link,
-        isbn: response.data.createBook.PK.split("#")[1],
+        id: response.data.createBook.PK.split("#")[1],
       };
       setBooks([...books, newBook]);
       console.log("create book response", response);
       setTitle("");
       setAuthor("");
-      setIsbn("");
+      setId("");
       setLink("");
     } catch (error) {
       console.error("create book error", error);
@@ -99,15 +99,6 @@ const Books = () => {
             <th>
               <FormControl
                 type="text"
-                placeholder="ISBN"
-                className="mr-sm-2"
-                value={isbn}
-                onChange={(e) => setIsbn(e.target.value)}
-              />
-            </th>
-            <th>
-              <FormControl
-                type="text"
                 placeholder="Link"
                 className="mr-sm-2"
                 value={link}
@@ -127,18 +118,18 @@ const Books = () => {
           <tr>
             <th>Title</th>
             <th>Author</th>
-            <th>ISBN</th>
+            <th>ID</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {orderedBooks.map((book) => (
-            <tr key={book.isbn}>
+            <tr key={book.id}>
               <td>
-                <Link to={`/books/${book.isbn}`}>{book.title}</Link>
+                <Link to={`/books/${book.id}`}>{book.title}</Link>
               </td>
               <td>{book.author}</td>
-              <td>{book.isbn}</td>
+              <td>{book.id}</td>
               <td>
                 <Button variant="danger" disabled={pending}>
                   Delete

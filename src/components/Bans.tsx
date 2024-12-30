@@ -3,7 +3,7 @@ import { Button, Form, FormControl, Modal, Table } from "react-bootstrap";
 import { Ban, useBookContext } from "../contexts/bookContext";
 import { client } from "../App";
 import { createBan, deleteBan } from "../graphql/mutations";
-import { getAllBans, getBansByIsbn, getBansByLea } from "../graphql/queries";
+import { getAllBans, getBansByBookId, getBansByLea } from "../graphql/queries";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 interface CreateBanReturn {
@@ -28,8 +28,8 @@ interface GetAllBansReturn {
   data: { getAllBans: DbBan[] };
 }
 
-interface GetBansByIsbnReturn {
-  data: { getBansByIsbn: DbBan[] };
+interface GetBansByBookIdReturn {
+  data: { getBansByBookId: DbBan[] };
 }
 
 interface GetBansByLeaReturn {
@@ -37,7 +37,7 @@ interface GetBansByLeaReturn {
 }
 
 export const removeBan = async (
-  isbn: string,
+  bookId: string,
   leaId: string,
   whenBanned: string,
   setSaving: (saving: boolean) => void
@@ -48,7 +48,7 @@ export const removeBan = async (
       query: deleteBan,
       variables: {
         deleteBanInput: {
-          isbn,
+          bookId,
           leaId,
           whenBanned,
         },
@@ -73,7 +73,7 @@ export const fetchAllBans = async (
     })) as GetAllBansReturn;
     setBans(
       response.data.getAllBans.map((b) => ({
-        isbn: b.SK.split("#")[0],
+        bookId: b.SK.split("#")[0],
         banTypeId: b.banTypeId,
         date: b.SK.split("#")[1],
         leaId: b.SK.split("#")[2],
@@ -93,32 +93,32 @@ const Bans = () => {
   const { books, leas, banTypes, bans, setBans } = useBookContext();
   const navigate = useNavigate();
   const { search } = useLocation();
-  const [isbn, setIsbn] = useState("");
+  const [bookId, setBookId] = useState("");
   const [lea, setLea] = useState("");
   const [date, setDate] = useState("");
   const [banType, setBanType] = useState("");
   const [saving, setSaving] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [link, setLink] = useState("");
-  const [filteredIsbn, setFilteredIsbn] = useState("");
+  const [filteredBookId, setFilteredBookId] = useState("");
   const [filteredLea, setFilteredLea] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [banToRemove, setBanToRemove] = useState<Ban | undefined>();
 
-  const fetchBansByIsbn = async (isbn: string) => {
+  const fetchBansByBookId = async (id: string) => {
     setFetching(true);
     try {
       const response = (await client.graphql({
-        query: getBansByIsbn,
+        query: getBansByBookId,
         variables: {
-          getBansByIsbnInput: {
-            isbn,
+          getBansByBookIdInput: {
+            bookId: id,
           },
         },
-      })) as GetBansByIsbnReturn;
+      })) as GetBansByBookIdReturn;
       setBans(
-        response.data.getBansByIsbn.map((b) => ({
-          isbn: b.SK.split("#")[0],
+        response.data.getBansByBookId.map((b) => ({
+          bookId: b.SK.split("#")[0],
           banTypeId: b.banTypeId,
           date: b.SK.split("#")[1],
           leaId: b.SK.split("#")[2],
@@ -126,9 +126,9 @@ const Bans = () => {
           links: JSON.parse(b.links),
         }))
       );
-      console.log("get bans by isbn response", response);
+      console.log("get bans by bookId response", response);
     } catch (error) {
-      console.error("get bans by isbn error", error);
+      console.error("get bans by bookId error", error);
     } finally {
       setFetching(false);
     }
@@ -148,7 +148,7 @@ const Bans = () => {
       console.log("get bans by lea response", response);
       setBans(
         response.data.getBansByLea.map((b) => ({
-          isbn: b.SK.split("#")[0],
+          bookId: b.SK.split("#")[0],
           banTypeId: b.banTypeId,
           date: b.SK.split("#")[1],
           leaId: b.SK.split("#")[2],
@@ -165,22 +165,22 @@ const Bans = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(search);
-    const isbnParam = params.get("isbn");
+    const bookIdParam = params.get("bookId");
     const leaParam = params.get("lea");
-    if (isbnParam) {
-      fetchBansByIsbn(isbnParam);
-      setFilteredIsbn(isbnParam);
+    if (bookIdParam) {
+      fetchBansByBookId(bookIdParam);
+      setFilteredBookId(bookIdParam);
       setFilteredLea("");
       return;
     }
     if (leaParam) {
       fetchBansByLea(leaParam);
       setFilteredLea(leaParam);
-      setFilteredIsbn("");
+      setFilteredBookId("");
       return;
     }
     fetchAllBans(setFetching, setBans);
-    setFilteredIsbn("");
+    setFilteredBookId("");
     setFilteredLea("");
   }, [search]);
 
@@ -196,7 +196,7 @@ const Bans = () => {
         query: createBan,
         variables: {
           createBanInput: {
-            isbn,
+            bookId,
             leaId: lea,
             whenBanned: date,
             leaName: leas.find((l) => l.id === lea)?.name,
@@ -206,7 +206,7 @@ const Bans = () => {
         },
       })) as CreateBanReturn;
       console.log("create ban response", response);
-      setIsbn("");
+      setBookId("");
       setLea("");
       setDate("");
       setBanType("");
@@ -240,12 +240,12 @@ const Bans = () => {
                 as="select"
                 placeholder="Book"
                 className="mr-sm-2"
-                value={isbn}
-                onChange={(e) => setIsbn(e.target.value)}
+                value={bookId}
+                onChange={(e) => setBookId(e.target.value)}
               >
                 <option value="">Select a book</option>
                 {orderedBooks.map((book) => (
-                  <option key={book.isbn} value={book.isbn}>
+                  <option key={book.id} value={book.id}>
                     {book.title}
                   </option>
                 ))}
@@ -317,12 +317,12 @@ const Bans = () => {
                 as="select"
                 placeholder="Book"
                 className="mr-sm-2"
-                value={filteredIsbn}
-                onChange={(e) => navigate(`/bans?isbn=${e.target.value}`)}
+                value={filteredBookId}
+                onChange={(e) => navigate(`/bans?bookId=${e.target.value}`)}
               >
                 <option value="">Select a book</option>
                 {orderedBooks.map((book) => (
-                  <option key={book.isbn} value={book.isbn}>
+                  <option key={book.id} value={book.id}>
                     {book.title}
                   </option>
                 ))}
@@ -365,12 +365,12 @@ const Bans = () => {
             </tr>
           ) : (
             bans.map((ban) => {
-              const book = books.find((b) => b.isbn === ban.isbn);
+              const book = books.find((b) => b.id === ban.bookId);
               return (
-                <tr key={ban.isbn + ban.leaId}>
+                <tr key={ban.bookId + ban.leaId}>
                   <td>
                     <Link
-                      to={`/bans/${ban.isbn}:${ban.leaId}:${ban.whenBanned}`}
+                      to={`/bans/${ban.bookId}:${ban.leaId}:${ban.whenBanned}`}
                     >
                       {book?.title}
                     </Link>
@@ -409,7 +409,7 @@ const Bans = () => {
               variant="danger"
               onClick={() =>
                 removeBan(
-                  banToRemove?.isbn,
+                  banToRemove?.bookId,
                   banToRemove?.leaId,
                   banToRemove?.whenBanned,
                   setSaving

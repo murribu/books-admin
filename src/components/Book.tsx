@@ -19,31 +19,31 @@ interface GetBookReturn {
 }
 
 const BookComponent = () => {
-  const { isbn } = useParams<{ isbn: string }>();
+  const { id } = useParams<{ id: string }>();
   const [book, setBook] = useState<Book | null>(null);
 
-  const fetchBook = async (isbn: string) => {
+  const fetchBook = async (bookId: string) => {
     const response = (await client.graphql({
       query: getBook,
-      variables: { getBookInput: { isbn } },
+      variables: { getBookInput: { id: bookId } },
     })) as GetBookReturn;
     setBook({
       title: response.data.getBook.title,
       author: response.data.getBook.author,
       link: response.data.getBook.link,
-      isbn: response.data.getBook.PK.split("#")[1],
+      id: response.data.getBook.PK.split("#")[1],
     });
     console.log("get book response", response);
   };
 
   useEffect(() => {
-    fetchBook(isbn || "");
-  }, [isbn]);
+    fetchBook(id || "");
+  }, [id]);
 
   return (
     <div>
       <h1>Book</h1>
-      <p>ISBN: {isbn}</p>
+      <p>ID: {id}</p>
       <p>Title: {book?.title}</p>
       <p>Author: {book?.author}</p>
       <p>
